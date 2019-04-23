@@ -15,7 +15,9 @@ app.use(express.json());
 app.use(express.static("public"));
 
 
-mongoose.connect("mongodb://localhost/NewsScraper", { useNewUrlParser: true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/NewsScraper";
+
+mongoose.connect(MONGODB_URI);
 
 app.use(express.static(process.cwd() + "/public"));
 
