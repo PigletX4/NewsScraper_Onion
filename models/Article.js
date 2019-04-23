@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-
+ 
 var Schema = mongoose.Schema;
 
 var ArticleSchema = new Schema({
@@ -10,7 +10,7 @@ var ArticleSchema = new Schema({
 
     link: {
         type: String,
-        required: true
+        required: false
     },
     image: {
         type: String,
@@ -21,8 +21,8 @@ var ArticleSchema = new Schema({
         required: false
     },
     note: {
-        type: [Schema.Types.ObjectId],
-        ref: "Note"
+        type: [],
+        required: false
     }
 });
 

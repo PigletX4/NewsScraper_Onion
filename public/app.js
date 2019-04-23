@@ -35,13 +35,15 @@ $(document).on("click", "#savenote", function() {
       url: "/articles/" + thisId,
       data: {
         title: $("#titleinput").val(),
-        body: $("#bodyinput").val()
+        text: $("#bodyinput").val()
       }
     })
       .then(function(data) {
-        console.log(data);
+        console.log(data)
         $("#notes").empty();
       });
+
+    
 
     $("#titleinput").val("");
     $("#bodyinput").val("");

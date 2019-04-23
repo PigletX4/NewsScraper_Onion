@@ -8,7 +8,6 @@ var PORT = 3000;
 
 var app = express();
 
-// Configure middleware
 
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
@@ -62,11 +61,33 @@ app.get("/articles", function(req, res) {
       });
 });
 
+app.post("/articles/:id", (req, res) => {
+
+  db.Article.create(req.body)
+  .then(function(dbNote) {
+    console.log("this is dbnote: " + dbNote);
+    return db.Article
+    .findOneAndUpdate(
+      { _id: req.params.id }, 
+      { $addToSet: {note: [db.title, db.text]}}, 
+      { new: true });
+  })
+  .then(function(dbArticle) {
+
+    res.json(dbArticle);
+  })
+  .catch(function(err) {
+    // If an error occurred, send it to the client
+    res.json(err);
+  });
+});
+    
 app.get("/articles/:id", function(req, res) {
     db.Article.findOne({ _id: req.params.id })
-      .populate("note")
+      .populate("Note", "title")
       .then(function(dbArticle) {
         res.json(dbArticle);
+        console.log(dbArticle)
       })
       .catch(function(err) {
         res.json(err);
