@@ -40,7 +40,7 @@ app.get("/scrape", function(req, res) {
 
       db.Article.create(result)
       .then(function(dbArticle) {
-        console.log(dbArticle)
+        console.log("This is dbArticle" + dbArticle)
       })
       .catch(function(err) {
         console.log(err);
@@ -62,31 +62,10 @@ app.get("/articles", function(req, res) {
         res.json(err);
       });
 });
-
-app.post("/articles/:id", (req, res) => {
-
-  db.Article.create(req.body)
-  .then(function(dbNote) {
-    console.log("this is dbnote: " + dbNote);
-    return db.Article
-    .findOneAndUpdate(
-      { _id: req.params.id }, 
-      { $addToSet: {note: [db.title, db.text]}}, 
-      { new: true });
-  })
-  .then(function(dbArticle) {
-
-    res.json(dbArticle);
-  })
-  .catch(function(err) {
-    // If an error occurred, send it to the client
-    res.json(err);
-  });
-});
     
 app.get("/articles/:id", function(req, res) {
     db.Article.findOne({ _id: req.params.id })
-      .populate("Note", "title")
+      .populate("note")
       .then(function(dbArticle) {
         res.json(dbArticle);
         console.log(dbArticle)
@@ -94,6 +73,25 @@ app.get("/articles/:id", function(req, res) {
       .catch(function(err) {
         res.json(err);
       });
+  });
+
+  app.post("/articles/:id", (req, res) => {
+    db.Note.create(req.body)
+    .then(function(dbNote) {
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, {$push:{ note: dbNote._id }}, { new: true });
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+  });
+
+  app.post("/articles/delete/:id", (req, res) => {
+    console.log("Deleting post #" + req.params.id)
+    db.Note.remove({_id: req.params.id})
+    .then(function (){
+     db.Article.findByIdAndUpdate({_id: req.params.id}, {$pull:{ note: req.params.id }})
+    })
   });
 
 var port = process.env.port || 3000;
